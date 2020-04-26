@@ -23,9 +23,7 @@
 		<Unit filename="../lab03-test/test.cpp">
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
-		<Unit filename="histogram.cpp">
-			<Option target="&lt;{~None~}&gt;" />
-		</Unit>
+		<Unit filename="histogram.cpp" />
 		<Unit filename="histogram.h">
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
