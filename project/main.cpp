@@ -1,9 +1,9 @@
 #include "histogram.h"
-#include "histogram.cpp"
 
 #include <iostream>
 #include <vector>
 #include <conio.h>
+#include <curl/curl.h>
 
 using namespace std;
 
@@ -150,7 +150,7 @@ void svg_rect(double x, double y, double width, double height,
 
 int main()
 {
-
+curl_global_init(CURL_GLOBAL_ALL);
 
     Input data=read_input(cin,true);
 
