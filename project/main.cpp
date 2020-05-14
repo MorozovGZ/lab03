@@ -7,10 +7,7 @@
 
 using namespace std;
 
-struct Input {
-    vector<double> numbers;
-    size_t bin_count;
-};
+
 
 
 
@@ -46,24 +43,7 @@ Input read_input(istream& in)
 }
 
 
-vector<size_t> make_histogram(Input & data)
-{
-    vector<size_t> result( data.bin_count);
-    double min;
-    double max;
-    find_minmax(data.numbers, min, max);
-    for (double number : data.numbers)
-    {
-        size_t bin = (size_t)((number - min) / (max - min) * data.bin_count);
-        if (bin == data.bin_count)
-        {
-            bin--;
-        }
-        result[bin]++;
-    }
 
-    return result;
-}
 
 void show_histogram_text(vector<size_t> bins)
 {
