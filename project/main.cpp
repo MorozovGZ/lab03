@@ -151,21 +151,30 @@ void svg_rect(double x, double y, double width, double height,
 int main(int argc, char* argv[] )
 
 {
-curl_global_init(CURL_GLOBAL_ALL);
+    curl_global_init(CURL_GLOBAL_ALL);
 
     Input data=read_input(cin,true);
 
     const auto bins = make_histogram(data);
 
     show_histogram_svg(bins);
-if (argc>1)
-{
-    cout << " argc = " << argc << endl;
-   for (int i = 0; i < argc; ++i)
-   {
+    if (argc>1)
+    {
+        CURL* curl = curl_easy_init();
+        if(curl)
+        {
+            CURLcode res;
+            curl_easy_setopt(curl, CURLOPT_URL, argv[1]);
+            res = curl_easy_perform(curl);
+            curl_easy_cleanup(curl);
+        }
 
-       cout << "argv[" << i << "] = " << argv[i] << " ";
-   }
-}
+        cout << " argc = " << argc << endl;
+        for (int i = 0; i < argc; ++i)
+        {
+
+            cout << "argv[" << i << "] = " << argv[i] << " ";
+        }
+    }
     return 0;
 }
