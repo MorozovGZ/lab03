@@ -4,6 +4,8 @@
 #include <vector>
 #include <conio.h>
 #include <curl/curl.h>
+#include <sstream>
+#include <string>
 
 using namespace std;
 
@@ -143,37 +145,81 @@ show_histogram_svg(const vector<size_t>& bins)
 void svg_text(double left, double baseline, string text);
 void svg_rect(double x, double y, double width, double height,
               string stroke, string fill);
+size_t
+write_data(void* items, size_t item_size, size_t item_count, void* ctx)
+{
+    int data_size=item_size * item_count;
+    stringstream* buffer = reinterpret_cast<stringstream*>(ctx);
+    cout << data_size << endl;
+    cout << (const char*)items << endl;
+    if ( buffer == nullptr )
+    {
+        cout << " buffer failed";
 
+    }
+    (* buffer ).write( (const char*)items, data_size);
+    return 0;
+}
+Input download(const string& address)
+{
+    stringstream buffer;
 
+    curl_global_init(CURL_GLOBAL_ALL);
+    CURL* curl = curl_easy_init();
+    if(curl)
+    {
+        CURLcode res;
+        if ( CURLE_OK != curl_easy_setopt(curl, CURLOPT_URL, address))
+        {
+            cout << "error 4";
 
+        }
+            cerr << address << endl;
+
+//        if ( CURLE_OK != curl_easy_setopt(curl, CURLOPT_URL, "http://uii.mpei.ru/study/courses/cs/lab03/marks.txt") )
+ //       {
+   //         cout << "error 1";
+
+     //   }
+        if ( CURLE_OK != curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer))
+        {
+            cout << "error 2";
+
+        }
+
+       if ( CURLE_OK != curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data))
+        {
+            cout << "error 3";
+
+        }
+
+        res = curl_easy_perform(curl);
+        if ( res != CURLE_OK )
+        {
+            cerr << curl_easy_strerror( res ) << endl;
+            exit(1);
+        }
+        curl_easy_cleanup(curl);
+    }
+
+    return read_input(buffer, false);
+}
 
 
 int main(int argc, char* argv[] )
-
 {
-    curl_global_init(CURL_GLOBAL_ALL);
 
-    Input data=read_input(cin,true);
-
-    const auto bins = make_histogram(data);
-
-    show_histogram_svg(bins);
-    if (argc>1)
+    Input input;
+    if (argc > 1)
     {
-        CURL* curl = curl_easy_init();
-        if(curl)
-        {
-            CURLcode res;
-            curl_easy_setopt(curl, CURLOPT_URL, argv[1]);
-            res = curl_easy_perform(curl);
-            if ( res != CURLE_OK )
-            {
-                cerr << curl_easy_strerror( res ) << endl;
-                exit(1);
-            }
-            curl_easy_cleanup(curl);
-        }
-
+        input = download(argv[1]);
     }
+    else
+    {
+        input = read_input(cin, true);
+    }
+
+    const auto bins = make_histogram(input);
+    show_histogram_svg(bins);
     return 0;
 }
