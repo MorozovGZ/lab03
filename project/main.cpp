@@ -150,15 +150,11 @@ write_data(void* items, size_t item_size, size_t item_count, void* ctx)
 {
     int data_size=item_size * item_count;
     stringstream* buffer = reinterpret_cast<stringstream*>(ctx);
-    cout << data_size << endl;
-    cout << (const char*)items << endl;
-    if ( buffer == nullptr )
-    {
-        cout << " buffer failed";
+    cerr << data_size << endl;
+    cerr << (const char*)items << endl;
 
-    }
     (* buffer ).write( (const char*)items, data_size);
-    return 0;
+    return data_size;
 }
 Input download(const string& address)
 {
@@ -169,30 +165,32 @@ Input download(const string& address)
     if(curl)
     {
         CURLcode res;
-        if ( CURLE_OK != curl_easy_setopt(curl, CURLOPT_URL, address))
+        if ( CURLE_OK != curl_easy_setopt(curl, CURLOPT_URL, address.c_str()))
         {
             cout << "error 4";
 
         }
-            cerr << address << endl;
+
+        cerr << address << endl;
 
 //        if ( CURLE_OK != curl_easy_setopt(curl, CURLOPT_URL, "http://uii.mpei.ru/study/courses/cs/lab03/marks.txt") )
- //       {
-   //         cout << "error 1";
+//       {
+        //         cout << "error 1";
 
-     //   }
+        //   }
         if ( CURLE_OK != curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer))
         {
             cout << "error 2";
 
         }
 
-       if ( CURLE_OK != curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data))
+        if ( CURLE_OK != curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data))
         {
             cout << "error 3";
 
         }
 
+        address.c_str();
         res = curl_easy_perform(curl);
         if ( res != CURLE_OK )
         {
