@@ -1,6 +1,8 @@
 #include "histogram.h"
 #include "histogram.cpp"
-
+#include <windows.h>
+#include<sstream>
+#include<curl/curl.h>
 #include <iostream>
 #include <vector>
 
@@ -19,7 +21,7 @@ vector<double> input_numbers(const size_t count)
 
 
 
-vector<size_t> make_histogram(const vector<double>& numbers, const size_t count)
+ vector<size_t> make_histogram(const vector<double>& numbers, const size_t count)
 {
     vector<size_t> result(count);
     double min;
@@ -136,7 +138,28 @@ void svg_rect(double x, double y, double width, double height,
 
 int main()
 {
-    size_t number_count;
+     printf("Decimal version %u\n", GetVersion());
+    printf("Hexadecimal version %x\n", GetVersion());
+    DWORD info = GetVersion();
+    DWORD mask = 0x0000ffff;
+    DWORD version = info & mask;
+    printf("version %u.\n", version);
+
+    DWORD platform = info >> 16;
+    DWORD mask_minor = 0x000000ff;
+    DWORD mask_major = 0x0000ff00;
+    DWORD version_minor = info & mask_minor;
+    printf("version minor %u.\n", version_minor);
+
+    DWORD version_major1 = info & mask_major;
+    DWORD version_major = version_major1>>8;
+    printf("version major %u.\n",version_major);
+
+    if ((info & 0b10000000'00000000'0000000'00000000) == 0) {
+    DWORD build = platform;
+    printf("build %u.\n",build);
+}
+    /* size_t number_count;
     cerr << "Enter number count: ";
     cin >> number_count;
 
@@ -151,6 +174,6 @@ int main()
     const auto bins = make_histogram(numbers, bin_count);
 
     show_histogram_svg(bins);
-
+*/
     return 0;
 }
