@@ -22,7 +22,52 @@ using namespace std;
 
 
 
+struct option {
+    string stroke;
+    bool stroke_correct;
+    bool guide;
+    char* url;
+    };
 
+option stroke(int argc, char** argv){
+    option str;
+    str.url = 0;
+    str.stroke_correct=false;
+    str.guide = false;
+    for (int i = 1; i < argc; i++)
+    {
+        if (argv[i][0] == '-')
+        {
+
+            if(string(argv[i]) == "-stroke")
+            {
+                if(i+1<argc)
+                {
+                    str.stroke = string(argv[i+1]);
+                    if (str.stroke.size()!=0)
+                    {
+                        str.stroke_correct=true;
+                        i++;
+                    }
+                    else
+                        {
+                            str.guide=true;
+                        }
+                }
+
+                else
+                {
+                    str.guide = true;
+                }
+            }
+        }
+        else
+        {
+            str.url=argv[i];
+        }
+    }
+    return str;
+}
     string print_name ()
 {
     stringstream buffer;
@@ -54,7 +99,7 @@ using namespace std;
 
     return buffer.str();
 }
-/*vector<double> input_numbers(const size_t count)
+/*
 
 {
     vector <double> result(count);
@@ -173,7 +218,7 @@ void svg_rect(double x, double y, double width, double height, string stroke = "
     cout<< "<rect x='" << x << "' y='"<< y << "' width='" << width << "' height='" << height << "' stroke='red' fill='blue'/>";
 }
 void
-show_histogram_svg(const vector<size_t>& bins)
+show_histogram_svg(const vector<size_t>& bins,string stroke)
 {
     svg_begin(400, 300);
     svg_text(20,20,to_string(bins[0]));
@@ -202,7 +247,7 @@ show_histogram_svg(const vector<size_t>& bins)
 }
 void svg_text(double left, double baseline, string text);
 void svg_rect(double x, double y, double width, double height,
-              string stroke, string fill);
+           string stroke, string fill);
 
 size_t
 write_data(void* items, size_t item_size, size_t item_count, void* ctx)
@@ -216,7 +261,7 @@ write_data(void* items, size_t item_size, size_t item_count, void* ctx)
     return data_size;
 }
 Input
-download(const string& address) {
+download(const string& address,const option &str) {
     stringstream buffer;
 curl_global_init(CURL_GLOBAL_ALL);
  CURL *curl = curl_easy_init();
@@ -242,18 +287,23 @@ curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer);
 {
 
 
-
         Input input;
-        if (argc > 1)
-        {
-            input = download(argv[1]);
-        }
-        else
-        {
-            input = read_input(cin, true);
-        }
+        option str = stroke(argc,argv);
+    if (str.guide)
+    {
+        cerr<<"Error";
+        return 1;
+    }
+   if (str.url)
+    {
+        input = download(str.url,str);
+    }
+    else
+    {
+        input = read_input(cin, true);
+    }
 
         const auto bins = make_histogram(input);
-        show_histogram_svg(bins);
+        show_histogram_svg(bins,str.stroke);
         return 0;
     }
